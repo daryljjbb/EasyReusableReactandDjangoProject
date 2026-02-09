@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/EasyReusableReactandDjangoProject/static/css/main.f855e6bc.css",
+    "main.js": "/EasyReusableReactandDjangoProject/static/js/main.bacc690d.js",
+    "static/js/453.20359781.chunk.js": "/EasyReusableReactandDjangoProject/static/js/453.20359781.chunk.js",
+    "static/media/logo.svg": "/EasyReusableReactandDjangoProject/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/EasyReusableReactandDjangoProject/index.html",
+    "main.f855e6bc.css.map": "/EasyReusableReactandDjangoProject/static/css/main.f855e6bc.css.map",
+    "main.bacc690d.js.map": "/EasyReusableReactandDjangoProject/static/js/main.bacc690d.js.map",
+    "453.20359781.chunk.js.map": "/EasyReusableReactandDjangoProject/static/js/453.20359781.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f855e6bc.css",
+    "static/js/main.bacc690d.js"
+  ]
+}
