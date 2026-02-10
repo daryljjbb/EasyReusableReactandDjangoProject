@@ -30,6 +30,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+# 1. Apps - Keep these together
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,15 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'my_app',
-    'corsheaders',  # newly added
-    'rest_framework',  # newly added
+    'corsheaders',      # Requirements for React
+    'rest_framework',   # Requirements for API
+    'my_app',           # Your local app
 ]
 
+# 2. Middleware - Order is critical here
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # newly added
+    'corsheaders.middleware.CorsMiddleware', # MUST be above CommonMiddleware
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -55,12 +57,37 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'backend.urls'
 
+# 3. CORS & CSRF Settings
 CORS_ALLOW_CREDENTIALS = True
 
+# Add both localhost and 127.0.0.1 to prevent connection errors
 CORS_ALLOWED_ORIGINS = [
-    "https://daryljjbb.github.io",
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://daryljjbb.github.io",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://daryljjbb.github.io",
+]
+
+# 4. Local Development Hack (IMPORTANT)
+# Setting SECURE = True forces HTTPS. On your local computer (http), 
+# this will block your cookies/session. Use this logic:
+import sys
+if 'runserver' in sys.argv:
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+else:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+
+# ... (Keep the rest of your TEMPLATES, DATABASES, and AUTH settings as they were)
 
 TEMPLATES = [
     {
@@ -127,27 +154,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-
-  # this is how to allow other frontend to fetch data
-
-CORS_ALLOWED_ORIGINS = [
-    "https://daryljjbb.github.io",
-    "http://localhost:3000",
-    "http://localhost:8000",
-]
-
- # Allow GitHub Pages to send cookies
-CSRF_TRUSTED_ORIGINS = [
-    "https://daryljjbb.github.io",
-    "http://localhost:3000",
-]
-
-# Required for cross-site cookies (GitHub Pages → localhost)
-SESSION_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SECURE = True
-
-CSRF_COOKIE_SAMESITE = "None"
-CSRF_COOKIE_SECURE = True
-
-
- 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny', # Allows anyone to see/edit for now
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+}
