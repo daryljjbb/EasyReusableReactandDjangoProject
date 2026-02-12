@@ -14,7 +14,7 @@ class UnsafeSessionAuthentication(SessionAuthentication):
 class ItemListCreateView(generics.ListCreateAPIView):
     # REMOVE authentication_classes = [] 
     # Use SessionAuthentication to recognize the logged-in admin
-    authentication_classes = [SessionAuthentication] 
+    authentication_classes = [UnsafeSessionAuthentication] 
     permission_classes = [IsAdminOrReadOnly]
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
@@ -44,7 +44,7 @@ from rest_framework.authentication import SessionAuthentication # Add this impor
 
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication]) # Tells DRF: "Look for the cookie!"
+@authentication_classes([UnsafeSessionAuthentication]) # Tells DRF: "Look for the cookie!"
 @permission_classes([AllowAny]) 
 def get_user_info(request):
     if request.user.is_authenticated:
@@ -58,6 +58,7 @@ def get_user_info(request):
 # my_app/views.py
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
+from django.middleware.csrf import get_token
 
 @csrf_exempt
 @api_view(['POST'])
@@ -70,6 +71,7 @@ def login_view(request):
     
     if user is not None:
         login(request, user)
+        get_token(request) # Ensure CSRF cookie is sent
         return Response({"username": user.username, "is_admin": user.is_staff})
     return Response({"detail": "Invalid credentials"}, status=401)
 
@@ -82,9 +84,3 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return Response({"detail": "Logged out successfully"})
-
-
-
-
-
-

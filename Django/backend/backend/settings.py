@@ -77,13 +77,14 @@ CSRF_TRUSTED_ORIGINS = [
 # Setting SECURE = True forces HTTPS. On your local computer (http), 
 # this will block your cookies/session. Use this logic:
 import sys
-if 'runserver' in sys.argv:
+if DEBUG:
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
 else:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
+SESSION_COOKIE_DOMAIN = None # Allow cookie to work on localhost or 127.0.0.1
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SAMESITE = "Lax"
 
