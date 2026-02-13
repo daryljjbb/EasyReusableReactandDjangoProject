@@ -1,41 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
-import  './index.css';
-import { useEffect, useState} from 'react';
-import { useApi, request} from "../src/hooks/useApi";
-import  ItemManager  from '../src/page/ItemManager';
-import  Login  from './components/login';
-
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './index.css';
+import Login from './components/Login';
 
 function App() {
-  const [user, setUser] = useState(null); // Stores {username, is_admin}
-  const { request } = useApi();
+  const [items, setItems] = useState([]);
+  const [user, setUser] = useState(null);
 
-  // src/App.js
-  const handleLogout = async () => {
-  const res = await request('POST', 'logout/');
-  if (res.success) {
-    setUser(null); // This MUST trigger to hide the buttons
-    window.location.reload(); // Hard refresh to clear any residual cache
-  }
-};
+  // 1. On refresh, check if user is already logged in
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+    fetchItems();
+  }, []);
 
+  const fetchItems = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/items/');
+      setItems(response.data);
+    } catch (err) {
+      console.log("Fetch failed", err);
+    }
+  };
 
-  if (!user) {
-    return <Login onLoginSuccess={(userData) => setUser(userData)} />;
-  }
+  const handleLogout = () => {
+    localStorage.clear();
+    setUser(null);
+  };
 
   return (
-    <div>
-      <header style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <span>Welcome, {user.username} {user.is_admin ? "(Admin)" : "(User)"}</span>
-        <button onClick={handleLogout}>Logout</button>
-      </header>
-
-      <ItemManager user={user} /> {/* Pass user down for button logic */}
+    <div className="App">
+      {user ? (
+        <>
+          <p>Welcome, {user.name} ({user.is_admin ? "Admin" : "User"})</p>
+          <button onClick={handleLogout}>Logout</button>
+          
+          <ul>
+            {Array.isArray(items) && items.map(item => (
+              <li key={item.id}>
+                {item.name}
+                {/* 2. ADMIN ONLY BUTTONS: Only shows if user.is_admin is true */}
+                {user.is_admin && (
+                  <button onClick={() => alert("Admin Edit")}>Edit</button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <Login setUser={setUser} />
+      )}
     </div>
   );
 }
-
 
 export default App;

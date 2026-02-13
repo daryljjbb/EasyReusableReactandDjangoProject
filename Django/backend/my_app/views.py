@@ -4,18 +4,24 @@ from .models import Item
 from .serializers import ItemSerializer
 from .permissions import IsAdminOrReadOnly
 
-from rest_framework.authentication import SessionAuthentication
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+# 1. Custom Serializer to include "is_admin" in the response
+class MyTokenSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        # Add the user's admin status to the response
+        data['is_admin'] = self.user.is_staff 
+        data['username'] = self.user.username
+        return data
 
-class UnsafeSessionAuthentication(SessionAuthentication):
-    def enforce_csrf(self, request):
-        return  # This tells DRF: "Don't check for CSRF tokens"
-
+# 2. The View the frontend will call
+class LoginView(TokenObtainPairView):
+    serializer_class = MyTokenSerializer
 class ItemListCreateView(generics.ListCreateAPIView):
     # REMOVE authentication_classes = [] 
     # Use SessionAuthentication to recognize the logged-in admin
-    authentication_classes = [UnsafeSessionAuthentication] 
-    permission_classes = [IsAdminOrReadOnly]
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
 
@@ -28,8 +34,6 @@ from django.views.decorators.csrf import csrf_exempt
 @method_decorator(csrf_exempt, name='dispatch')
 class ItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     # Use your new custom class instead of the standard SessionAuthentication
-    authentication_classes = [UnsafeSessionAuthentication] 
-    permission_classes = [IsAdminOrReadOnly]
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
 
@@ -42,17 +46,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authentication import SessionAuthentication # Add this import
 
 
-
-@api_view(['GET'])
-@authentication_classes([UnsafeSessionAuthentication]) # Tells DRF: "Look for the cookie!"
-@permission_classes([AllowAny]) 
-def get_user_info(request):
-    if request.user.is_authenticated:
-        return Response({
-            "username": request.user.username,
-            "is_admin": request.user.is_staff
-        })
-    return Response({"detail": "Not logged in"}, status=401)
 
 
 # my_app/views.py
