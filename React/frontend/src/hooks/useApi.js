@@ -1,29 +1,47 @@
 import { useState } from 'react';
-import api from '../api/axios';
+import apiClient from '../api/axios'; // Make sure this path points to the file above
 
 export const useApi = () => {
-  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Method = GET/POST/PUT/DELETE | url = 'items/' | body = JSON data
-  const request = async (method, url, body = null) => {
+  const request = async (method, url, data = null) => {
     setLoading(true);
     setError(null);
+    
     try {
-      const res = await api({ method, url, data: body });
-      setData(res.data);
-      return { success: true, payload: res.data };
-    } catch (err) {
-      // Catch backend errors (400, 404, 500) or network crashes
-      const msg = err.response?.data?.detail || "Connection Error";
-      setError(msg);
-      return { success: false, error: msg };
-    } finally {
+      const response = await apiClient({
+        method: method,
+        url: url,
+        data: data,
+      });
+      
       setLoading(false);
+      // Return a consistent success object
+      return { success: true, payload: response.data };
+      
+    } catch (err) {
+      setLoading(false);
+      
+      // specific error handling for Django DRF responses
+      let errorMsg = "An error occurred";
+      if (err.response && err.response.data) {
+          if (err.response.data.detail) {
+              errorMsg = err.response.data.detail;
+          } else {
+              // Handle field-specific errors (e.g., {name: ["This field is required."]})
+              errorMsg = JSON.stringify(err.response.data);
+          }
+      } else if (err.message) {
+          errorMsg = err.message;
+      }
+      
+      setError(errorMsg);
+      return { success: false, error: errorMsg };
     }
   };
 
-  return { data, loading, error, request, setData };
+  return { request, loading, error };
 };
+
 
