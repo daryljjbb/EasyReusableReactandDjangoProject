@@ -10,13 +10,19 @@ DEBUG = True  # Set to False when you finally go live
 
 # Add '*' to allow any host to access your backend while testing
 # 1. Allow the backend to run on Render's servers
-ALLOWED_HOSTS = [ 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [ 'easyreusablereactanddjangoproject.onrender.com', 'localhost', '127.0.0.1','.onrender.com']
 
 # 2. Allow your GitHub Pages site to talk to this backend
 CORS_ALLOWED_ORIGINS = [
     "https://daryljjbb.github.io", # Your GitHub site
     "http://localhost:3000",           # Still keep local for testing
     "http://127.0.0.1:3000",
+]
+
+# For modern Django security, also add this:
+CSRF_TRUSTED_ORIGINS = [
+    "https://easyreusablereactanddjangoproject.onrender.com",
+    "https://daryljjbb.github.io",
 ]
 
 
