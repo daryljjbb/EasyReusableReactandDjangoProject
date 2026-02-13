@@ -35,29 +35,60 @@ function App() {
 
  // React side
 const handleSave = async (id) => {
-  // 1. Get the token we saved during login
+  // 1. Get the token (Digital ID card) from browser storage
   const token = localStorage.getItem('token'); 
   
   try {
-    // 2. Perform the PUT request
+    // 2. Try to send the update to the backend
     await axios.put(
-      `http://127.0.0.1:8000/api/items/update/${id}/`, // Change to your Render URL later
-      { name: editText }, // The data (Body)
+      `http://127.0.0.1:8000/api/items/update/${id}/`, 
+      { name: editText }, 
       { 
         headers: {
-          Authorization: `Bearer ${token}` // THE FIX: One config object with headers
+          Authorization: `Bearer ${token}` 
         }
       }
     );
 
-    // 3. Update the UI
+    // 3. SUCCESS: Update the list on the screen and close the edit box
     setItems(items.map(item => item.id === id ? { ...item, name: editText } : item));
     setEditingId(null);
     alert("Update Successful!");
 
   } catch (err) {
-    console.error("Update failed:", err.response?.data || err.message);
-    alert("Failed to update. Check the console for details.");
+    // 4. ERROR CATCHING: If the code above fails, we land here.
+    
+    if (err.response) {
+      /* 
+         THE SERVER TALKED BACK BUT SAID "NO":
+         This happens if:
+         - You aren't an admin (403 Forbidden)
+         - Your token expired (401 Unauthorized)
+         - The item ID doesn't exist (404 Not Found)
+      */
+      console.error("Server Error Data:", err.response.data);
+      console.error("Server Error Status:", err.response.status);
+      alert(`Server rejected request: ${err.response.status} - ${JSON.stringify(err.response.data)}`);
+
+    } else if (err.request) {
+      /* 
+         THE SERVER DID NOT ANSWER:
+         This happens if:
+         - Your Django server is turned off (Not running)
+         - The URL is wrong (Typo in the link)
+         - You have a network/internet issue
+      */
+      console.error("No response received:", err.request);
+      alert("Cannot connect to the server. Is your Django backend running?");
+
+    } else {
+      /* 
+         SOMETHING ELSE WENT WRONG:
+         This happens if there is a mistake in your JavaScript code itself.
+      */
+      console.error("Error Message:", err.message);
+      alert("An unexpected error occurred: " + err.message);
+    }
   }
 };
 const handleDelete = async (id) => {
