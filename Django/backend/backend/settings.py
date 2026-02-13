@@ -80,13 +80,18 @@ import sys
 if DEBUG:
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
+    # Local development: Strict or Lax is fine because frontend/backend are both localhost/127.0.0.1
+    SESSION_COOKIE_SAMESITE = "Lax"
+    CSRF_COOKIE_SAMESITE = "Lax"
 else:
+    # Production: HTTPS is required
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    # Production: Allow cookies across different domains (e.g., GitHub Pages -> Your Backend)
+    SESSION_COOKIE_SAMESITE = "None"
+    CSRF_COOKIE_SAMESITE = "None"
 
 SESSION_COOKIE_DOMAIN = None # Allow cookie to work on localhost or 127.0.0.1
-SESSION_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SAMESITE = "Lax"
 
 # ... (Keep the rest of your TEMPLATES, DATABASES, and AUTH settings as they were)
 
