@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/EasyReusableReactandDjangoProject/static/css/main.3982bb5f.css",
-    "main.js": "/EasyReusableReactandDjangoProject/static/js/main.605dd5ca.js",
+    "main.js": "/EasyReusableReactandDjangoProject/static/js/main.a1447901.js",
     "static/js/453.20359781.chunk.js": "/EasyReusableReactandDjangoProject/static/js/453.20359781.chunk.js",
     "index.html": "/EasyReusableReactandDjangoProject/index.html",
     "main.3982bb5f.css.map": "/EasyReusableReactandDjangoProject/static/css/main.3982bb5f.css.map",
-    "main.605dd5ca.js.map": "/EasyReusableReactandDjangoProject/static/js/main.605dd5ca.js.map",
+    "main.a1447901.js.map": "/EasyReusableReactandDjangoProject/static/js/main.a1447901.js.map",
     "453.20359781.chunk.js.map": "/EasyReusableReactandDjangoProject/static/js/453.20359781.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.3982bb5f.css",
-    "static/js/main.605dd5ca.js"
+    "static/js/main.a1447901.js"
   ]
 }
