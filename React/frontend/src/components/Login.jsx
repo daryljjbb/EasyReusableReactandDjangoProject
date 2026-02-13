@@ -16,7 +16,7 @@ function Login({ setUser }) {
       });
 
       // 2. Save token and user info to LocalStorage (Browser memory)
-      localStorage.setItem('token', response.data.access);
+      localStorage.setItem('token', response.data.token);
       const userData = { 
         name: response.data.username, 
         is_admin: response.data.is_admin 
@@ -24,7 +24,11 @@ function Login({ setUser }) {
       localStorage.setItem('user', JSON.stringify(userData));
 
       // 3. Update the App's state
-      setUser(userData);
+      // Save user info to state
+        setUser({ 
+        name: response.data.username, 
+        is_admin: response.data.is_admin 
+        });
       setError('');
     } catch (err) {
       // CATCH ERROR: If password is wrong or server is down
