@@ -10,7 +10,7 @@ function Login({ setUser }) {
     e.preventDefault();
     try {
       // 1. POST request to our new login endpoint
-      const response = await axios.post('http://127.0.0.1:8000/api/login/', {
+      const response = await axios.post('https://easyreusablereactanddjangoproject.onrender.com/api/login/', {
         username,
         password
       });
