@@ -21,7 +21,7 @@ function App() {
 
   const fetchItems = async () => {
     try {
-      const response = await axios.get('https://easyreusablereactanddjangoproject.onrender.com/api/items/');
+      const response = await axios.get('http://127.0.0.1:8000/api/items/');
       setItems(response.data);
     } catch (err) {
       console.log("Fetch failed", err);
